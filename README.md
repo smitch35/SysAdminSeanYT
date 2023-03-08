@@ -15,8 +15,8 @@ Support comes in many different fashsions.  Watch the vidoes, comment on the vid
 2. Stand up server resources
 3. Create a virtualization platform
 4. Add server virtual machines
-  + Add active directory
-  + Add server monitoring
+  Add active directory
+  Add server monitoring
 5. The datacenter must grow!
   
 ### Other Videos
