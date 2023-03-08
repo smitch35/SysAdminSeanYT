@@ -1,10 +1,12 @@
 # First we’ll build our global routing for the 3850.
+```
 Conf t
 Ip routing
 Router ospf 1
 Router-id 1.1.1.1
 Network 192.168.1.0 0.0.0.255 area 0
 Ip route 0.0.0.0 0.0.0.0 192.168.1.1
+```
 
 # Configure port 1 as outbound
 Conf t
