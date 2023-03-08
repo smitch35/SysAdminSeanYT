@@ -11,13 +11,13 @@ If you would prefer to read long and follow the blog https://sysadminsean.blogsp
 Support comes in many different fashsions.  Watch the vidoes, comment on the vidoes (I'm not the final source on any of the infomration I give, just a point of reference from someone that works in the field), request more infomation on the code via the issues system and I'll do my best to help or subscribe on my patreon.  The link for that can be found on the youtube videos.
 
 ### Series Goals
--  1.) Stand up a basic network
--  2.) Stand up server resources
--  3.) Create a virtualization platform
--  4.) Add server virtual machines
--      4a.) Add active directory
--      4b.) Add server monitoring
--  5.) The datacenter must grow!
+1. Stand up a basic network
+2. Stand up server resources
+3. Create a virtualization platform
+4. Add server virtual machines
+* Add active directory
+* Add server monitoring
+5. The datacenter must grow!
   
-# Other Videos
+### Other Videos
 I will also be covering topics such as 'tools we use' and 'things I hate'
