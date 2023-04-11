@@ -3,6 +3,7 @@ This is the link to the vendor that offers mobaxterm where you can download and 
 https://mobaxterm.mobatek.net/
 
 ## VS Code
+VS Code is a really cool product for writing code and maintaining repos.
 
 ## ChatGPT
 
