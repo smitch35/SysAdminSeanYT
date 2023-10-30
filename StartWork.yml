@@ -1,0 +1,12 @@
+---
+- name: Power on Dell servers via iDRAC
+  hosts: dell_idrac
+  gather_facts: no
+  tasks:
+    - name: Power on servers
+      community.dell.poweredge.redfish_idrac:
+        idrac_ip: "{{ idrac_ip }}"
+        idrac_user: "{{ idrac_user }}"
+        idrac_password: "{{ idrac_password }}"
+        state: "On"
+      delegate_to: localhost
