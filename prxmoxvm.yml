@@ -1,0 +1,45 @@
+---
+- name: Create Proxmox VM
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Import proxmoxer library
+      import_python:
+        src: proxmoxer
+      delegate_to: localhost
+
+    - name: Create Proxmox VM
+      proxmox_kvm:
+        node: your-proxmox-node  # Replace with your Proxmox node name or IP
+        vmid: 101               # VM ID
+        name: my-vm             # VM name
+        ostemplate: local:iso/path/to/linux.iso  # Path to your ISO on the Proxmox node
+        storage: local-lvm      # Storage name (change as needed)
+        memory: 2048            # Memory in MB
+        cores: 2                # Number of CPU cores
+        net0: virtio,bridge=vmbr0=vlan30  # NIC on VLAN 30
+        ide0: local-lvm:100     # 100GB IDE disk
+        onboot: yes
+        agent: 1               # Install qemu-guest-agent (optional)
+        ostype: l26
+        scsihw: virtio-scsi-pci
+        boot: d
+        kvm: yes
+
+    - name: Ensure VM is started
+      proxmox_kvm:
+        node: your-proxmox-node
+        vmid: 101
+        state: started
+
+    - name: Wait for the VM to be running
+      wait_for:
+        timeout: 300
+        host: your-proxmox-node
+        port: 22
+        state: started
+
+    - name: Print VM information
+      proxmox:
+        node: your-proxmox-node
+        vmid: 101
