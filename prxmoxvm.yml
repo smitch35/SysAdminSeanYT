@@ -3,19 +3,12 @@
   hosts: localhost
   gather_facts: no
   
-  vars_prompt:
-    - name: vm_name
-      prompt: "Enter the VM name"
-
   tasks:
 
-  - name: Create new container automatically selecting the next available vmid.
-    community.general.proxmox:
-      node: 'tigerhost01'
-      api_user: 'root@pam'
-      api_password: '8cBuZ787'
-      api_host: '192.168.20.2'
-      password: '8cBuZ787'
-      hostname: 'example.org'
-      validate_certs: false
-      ostemplate: 'local:/var/lib/pve/local-btrfs/template/cache/ubuntu-20.04-standard_20.04-1_amd64.tar.gz'
+  - name: Create new VM with minimal options
+    community.general.proxmox_kvm:
+      api_user: root@pam
+      api_password: 8cBuZ787
+      api_host: 192.168.20.2
+      name: spynal
+      node: tigerhost01
