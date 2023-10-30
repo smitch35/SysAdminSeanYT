@@ -4,9 +4,11 @@
   gather_facts: no
   tasks:
     - name: Power on servers
-      community.dell.poweredge.redfish_idrac:
-        idrac_ip: "{{ idrac_ip }}"
-        idrac_user: "{{ idrac_user }}"
-        idrac_password: "{{ idrac_password }}"
-        state: "On"
-      delegate_to: localhost
+      ansible.builtin.include_role:
+        name: idrac_server_powerstate
+  vars:
+    hostname: "{{ idrac_ip }}"
+    username: "{{ idrac_user }}"
+    password: "{{ idrac_password }}"
+    validate_certs: false
+    reset_type: "On"
