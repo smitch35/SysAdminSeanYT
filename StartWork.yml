@@ -13,11 +13,11 @@
 #        validate_certs: false
 #        reset_type: "On"
 
-    - name: Gracefully shutdown the system
+    - name: Gracefully Poweron the system
       dellemc.openmanage.ome_powerstate:
         hostname: "{{ idrac_ip }}"
         username: "{{ idrac_user }}"
         password: "{{ idrac_password }}"
         validate_certs: false
-        power_state: "On"
+        power_state: "on"
       delegate_to: localhost    
