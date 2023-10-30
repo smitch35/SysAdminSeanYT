@@ -18,6 +18,7 @@
         hostname: "{{ idrac_ip }}"
         username: "{{ idrac_user }}"
         password: "{{ idrac_password }}"
+        device_service_tag: "{{ idrac_servicetag }}"
         validate_certs: false
         power_state: "on"
       delegate_to: localhost    
