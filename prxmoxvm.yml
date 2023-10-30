@@ -6,39 +6,15 @@
   vars_prompt:
     - name: vm_name
       prompt: "Enter the VM name"
-  
+
   tasks:
-    
-    - name: Create Proxmox VM
-      proxmox_kvm:
-        node: 192.168.20.2  # Replace with your Proxmox node name or IP
-        hostname: "{{ vm_name }}"             # VM name
-        ostemplate: local:iso/path/to/linux.iso  # Path to your ISO on the Proxmox node
-        storage: local-lvm      # Storage name (change as needed)
-        memory: 2048            # Memory in MB
-        cores: 2                # Number of CPU cores
-        net0: virtio,bridge=vmbr0=vlan30  # NIC on VLAN 30
-        ide0: local-lvm:100     # 100GB IDE disk
-        onboot: yes
-        agent: 1               # Install qemu-guest-agent (optional)
-        ostype: l26
-        scsihw: virtio-scsi-pci
-        boot: d
-        kvm: yes
 
-    - name: Ensure VM is started
-      proxmox_kvm:
-        node: 192.168.20.2
-        hostname: "{{ vm_name}}"
-        state: started
-
-    - name: Print VM information
-      proxmox:
-        node: 192.168.20.2
-        hostname: "{{ vm_name }}"
-
-    - name: Add new VM to the Ansible inventory
-      add_host:
-        name: "{{ vm_name }}"
-        ansible_host: "{{ inventory_hostname }}"
-        ansible_user: your-ssh-user  # Replace with the SSH user for the new VM
+  - name: Create new container automatically selecting the next available vmid.
+    community.general.proxmox:
+      node: 'tigerhost01'
+      api_user: 'root@pam'
+      api_password: '8cBuZ787'
+      api_host: 'tigerhost01'
+      password: '8cBuZ787'
+      hostname: 'example.org'
+      ostemplate: 'local:vztmpl/ubuntu-14.04-x86_64.tar.gz'
