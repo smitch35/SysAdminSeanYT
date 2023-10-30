@@ -3,12 +3,21 @@
   hosts: dell-idrac
   gather_facts: no
   tasks:
-    - name: Power on servers
-      dellemc.openmanage.include_role:
-        name: idrac_server_powerstate
-      vars:  
+#    - name: Power on servers
+#      dellemc.openmanage.include_role:
+#        name: idrac_server_powerstate
+#      vars:  
+#        hostname: "{{ idrac_ip }}"
+#        username: "{{ idrac_user }}"
+#        password: "{{ idrac_password }}"
+#        validate_certs: false
+#        reset_type: "On"
+
+    - name: Gracefully shutdown the system
+      dellemc.openmanage.ome_powerstate:
         hostname: "{{ idrac_ip }}"
         username: "{{ idrac_user }}"
         password: "{{ idrac_password }}"
         validate_certs: false
-        reset_type: "On"
+        power_state: "On"
+      delegate_to: localhost    
