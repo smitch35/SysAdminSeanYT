@@ -4,10 +4,9 @@
   gather_facts: no
   tasks:
     - name: Power on servers
-      dellemc.openmanage.idrac_server_powerstate:
-      vars:
-        hostname: "{{ idrac_ip }}"
-        username: "{{ idrac_user }}"
-        password: "{{ idrac_password }}"
+      dellemc.openmanage.idrac_system_info:
+        idrac_ip: "{{ idrac_ip }}"
+        idrac_user: "{{ idrac_user }}"
+        idrac_password: "{{ idrac_password }}"
         validate_certs: false
-        reset_type: "On"
+      delegate_to: localhost
