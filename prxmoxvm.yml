@@ -11,7 +11,7 @@
 
   - name: Create new container automatically selecting the next available vmid.
     community.general.proxmox:
-      node: '192.168.20.2'
+      node: 'tigerhost01'
       api_user: 'root@pam'
       api_password: '8cBuZ787'
       api_host: '192.168.20.2'
