@@ -1,6 +1,6 @@
 ---
 - name: Power on Dell servers via iDRAC
-  hosts: dell_idrac
+  hosts: dell-idrac
   gather_facts: no
   tasks:
     - name: Power on servers
