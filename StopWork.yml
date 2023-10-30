@@ -1,0 +1,14 @@
+---
+- name: Power on Dell servers via iDRAC
+  hosts: dell-idrac
+  gather_facts: no
+  tasks:
+    - name: Power on servers
+      include_role:
+        name: idrac_server_powerstate
+      vars:  
+        hostname: "{{ idrac_ip }}"
+        username: "{{ idrac_user }}"
+        password: "{{ idrac_password }}"
+        validate_certs: false
+        reset_type: "Off"
