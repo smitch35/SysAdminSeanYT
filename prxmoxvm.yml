@@ -2,17 +2,36 @@
 - name: Create Proxmox VM
   hosts: localhost
   gather_facts: no
+  
+  vars_prompt:
+    - name: vm_name
+      prompt: "Enter the VM name"
+  
   tasks:
     - name: Import proxmoxer library
       import_python:
         src: proxmoxer
       delegate_to: localhost
 
+    - name: Get a list of existing VM IDs
+      proxmox:
+        node: your-proxmox-node  # Replace with your Proxmox node name or IP
+        vmid: '*'               # Query all VMs
+      register: existing_vms
+
+    - name: Determine the next available VM ID
+      set_fact:
+        next_vmid: "{{ existing_vms.vms | map(attribute='vmid') | max | default(100) + 1 }}"
+
+    - name: Debug next available VM ID
+      debug:
+        var: next_vmid
+
     - name: Create Proxmox VM
       proxmox_kvm:
         node: your-proxmox-node  # Replace with your Proxmox node name or IP
-        vmid: 101               # VM ID
-        name: my-vm             # VM name
+        vmid: "{{ next_vmid }}"               # VM ID
+        name: "{{ vm_name }}"             # VM name
         ostemplate: local:iso/path/to/linux.iso  # Path to your ISO on the Proxmox node
         storage: local-lvm      # Storage name (change as needed)
         memory: 2048            # Memory in MB
@@ -29,7 +48,7 @@
     - name: Ensure VM is started
       proxmox_kvm:
         node: your-proxmox-node
-        vmid: 101
+        vmid: "{{ new_vmid }}"
         state: started
 
     - name: Wait for the VM to be running
@@ -42,4 +61,10 @@
     - name: Print VM information
       proxmox:
         node: your-proxmox-node
-        vmid: 101
+        vmid: "{{ new_vmid }}"
+
+    - name: Add new VM to the Ansible inventory
+      add_host:
+        name: "{{ vm_name }}"
+        ansible_host: "{{ inventory_hostname }}"
+        ansible_user: your-ssh-user  # Replace with the SSH user for the new VM
