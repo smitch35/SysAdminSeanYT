@@ -5,9 +5,9 @@
   tasks:
     - name: Power on servers
       ansible.builtin.idrac_server_powerstate:
-  vars:
-    hostname: "{{ idrac_ip }}"
-    username: "{{ idrac_user }}"
-    password: "{{ idrac_password }}"
-    validate_certs: false
-    reset_type: "On"
+      vars:
+        hostname: "{{ idrac_ip }}"
+        username: "{{ idrac_user }}"
+        password: "{{ idrac_password }}"
+        validate_certs: false
+        reset_type: "On"
