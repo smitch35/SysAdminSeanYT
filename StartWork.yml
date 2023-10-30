@@ -4,7 +4,8 @@
   gather_facts: no
   tasks:
     - name: Power on servers
-      ansible.builtin.dellemc.openmanage.idrac_server_powerstate:
+      include_role:
+        name: idrac_server_powerstate
       vars:  
         hostname: "{{ idrac_ip }}"
         username: "{{ idrac_user }}"
