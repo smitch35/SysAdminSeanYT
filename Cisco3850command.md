@@ -50,3 +50,10 @@ switchport mode trunk
 switchport trunk allowed vlan 30,31 
 No shutdown
 ```
+
+### VLAN list
+## vlan 10 "End users"
+## vlan 20 "HOST MGMT"
+## vlan 30 "Vm network 1"
+## vlan 31 "vm network 2"
+## vlan 50 "out of band host mgmt"
