@@ -18,4 +18,4 @@
       password: '8cBuZ787'
       hostname: 'example.org'
       validate_certs: false
-      ostemplate: '/var/lib/pve/local-btrfs/template/iso/ubuntu-22.04.3-live-server-amd64.iso'
+      ostemplate: '/dev/sda3/var/lib/pve/local-btrfs/template/iso/ubuntu-22.04.3-live-server-amd64.iso'
