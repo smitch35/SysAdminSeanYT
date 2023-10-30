@@ -3,29 +3,12 @@
   hosts: dell-idrac
   gather_facts: no
   tasks:
-#    - name: Power on servers
-#      dellemc.openmanage.include_role:
-#        name: idrac_server_powerstate
-#      vars:  
-#        hostname: "{{ idrac_ip }}"
-#        username: "{{ idrac_user }}"
-#        password: "{{ idrac_password }}"
-#        validate_certs: false
-#        reset_type: "On"
-
-#    - name: Gracefully Poweron the system
-#      dellemc.openmanage.ome_powerstate:
-#        hostname: "{{ idrac_ip }}"
-#        username: "{{ idrac_user }}"
-#        password: "{{ idrac_password }}"
-##      validate_certs: false
-#        power_state: "on"
-#      delegate_to: localhost    
-
-    - name: Manage power state of the first device
-      dellemc.openmanage.redfish_powerstate:
-       baseuri: "{{ idrac_ip }}"
-       username: "{{ idrac_user }}"
-       password: "{{ idrac_password }}"
-       validate_certs: false
-       reset_type: "On"
+    - name: Power on servers
+      ansible.builtin.include_role:
+        name: idrac_server_powerstate
+      vars:  
+        hostname: "{{ idrac_ip }}"
+        username: "{{ idrac_user }}"
+        password: "{{ idrac_password }}"
+        validate_certs: false
+        reset_type: "On"
