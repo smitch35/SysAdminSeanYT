@@ -7,7 +7,7 @@
       ansible.builtin.include_role:
         name: idrac_server_powerstate
       vars:  
-        hostname:: "{{ idrac_ip }}"
+        hostname: "{{ idrac_ip }}"
         username: "{{ idrac_user }}"
         password: "{{ idrac_password }}"
         validate_certs: false
