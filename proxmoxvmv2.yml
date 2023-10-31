@@ -1,0 +1,30 @@
+---
+- name: Create Proxmox VM
+  hosts: localhost
+  gather_facts: no
+  
+  - vars_prompt:
+  - name: "server_name"
+    prompt: "What do you want to call the server?"
+    private: no
+  - name: "core_count"
+    prompt: "How many cores, if you don't know we will default 2."
+    private: no
+    default: 2
+  - name: "ram_size"
+    prompt: "How much ram (in MB) do you want, if nothing is chosen we will default to 4096MB (4gb)"
+    private: no
+    default: 4069
+  
+  tasks:
+
+  - name: Create new VM filled with var info
+    community.general.proxmox_kvm:
+      api_user: "{{ proxmox_root }}"
+      api_password: 8cBuZ787
+      api_host: 192.168.20.2
+      name: "{{ server_name }}"
+      node: tigerhost01
+      cores: "{{ core_count }}"
+      memory: "{{ ram_size }}"
+      
