@@ -14,7 +14,7 @@
   - name: "ram_size"
     prompt: "How much ram (in MB) do you want, if nothing is chosen we will default to 4096MB (4gb)"
     private: no
-    default: 4069
+    default: 4096
   
   tasks:
 
@@ -27,4 +27,3 @@
       node: tigerhost01
       cores: "{{ core_count }}"
       memory: "{{ ram_size }}"
-      
