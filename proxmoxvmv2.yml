@@ -3,7 +3,7 @@
   hosts: localhost
   gather_facts: no
   
-  - vars_prompt:
+- vars_prompt:
   - name: "server_name"
     prompt: "What do you want to call the server?"
     private: no
