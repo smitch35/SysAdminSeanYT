@@ -57,3 +57,14 @@ No shutdown
 ## vlan 30 "Vm network 1"
 ## vlan 31 "vm network 2"
 ## vlan 50 "out of band host mgmt"
+
+
+### Configure SSH
+# ip domain-name your_domain_name
+# crypto key generate rsa general-keys modulus 2048
+# ip ssh version 2
+# username your_username secret your_password
+# username your_username privilege 15
+# line vty 0 15
+# transport input ssh
+# write memory
