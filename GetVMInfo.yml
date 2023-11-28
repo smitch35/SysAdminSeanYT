@@ -7,7 +7,7 @@
     - name: Display information on virtual machines
       community.general.proxmox_kvm:
         api_host: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
-        api_user: "{{ hostvars[inventory_hostname]['ansible_api_user'] }}"
+        api_user: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
         api_password: "{{ hostvars[inventory_hostname]['ansible_api_password'] }}"
         node: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
         state: current
