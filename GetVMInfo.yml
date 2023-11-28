@@ -1,0 +1,19 @@
+---
+- name: Get information on virtual machines running on a Proxmox host
+  hosts: your_host
+  gather_facts: yes
+
+  tasks:
+    - name: Display information on virtual machines
+      community.general.proxmox_kvm:
+        api_host: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+        api_user: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
+        api_password: "{{ hostvars[inventory_hostname]['ansible_password'] }}"
+        node: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+        vmid: all
+        state: present
+      register: vm_info
+
+    - name: Display gathered facts
+      debug:
+        var: vm_info
