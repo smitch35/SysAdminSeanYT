@@ -8,7 +8,7 @@
       community.general.proxmox_kvm:
         api_host: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
         api_user: root@pam
-        api_password: "{{ hostvars[inventory_hostname]['ansible_password'] }}"
+        api_password: 8cBuZ787
         node: "{{ hostvars[inventory_hostname]['ansible_node'] }}"
         state: current
         vmid: 100
