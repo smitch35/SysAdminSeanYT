@@ -10,7 +10,7 @@
         api_user: "{{ hostvars[inventory_hostname]['ansible_user'] }}"
         api_password: "{{ hostvars[inventory_hostname]['ansible_password'] }}"
         node: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
-        state: present
+        state: current
       register: vm_info
 
     - name: Display gathered facts
