@@ -1,6 +1,6 @@
 ---
 - name: Get information on virtual machines running on a Proxmox host
-  hosts: your_host
+  hosts: proxmox
   gather_facts: yes
 
   tasks:
