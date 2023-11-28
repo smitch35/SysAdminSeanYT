@@ -9,7 +9,7 @@
         api_host: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
         api_user: root@pam
         api_password: 8cBuZ787
-        node: "{{ hostvars[inventory_hostname]['ansible_node'] }}"
+        node: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
         state: current
         vmid: 100
       register: vm_info
