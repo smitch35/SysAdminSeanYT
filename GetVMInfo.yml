@@ -6,10 +6,10 @@
   tasks:
     - name: Display information on virtual machines
       community.general.proxmox_kvm:
-        api_host: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+        api_host: 192.168.20.2
         api_user: root@pam
         api_password: 8cBuZ787
-        node: "{{ hostvars[inventory_hostname]['ansible_host'] }}"
+        node: 192.168.20.2
         state: current
         vmid: 100
       register: vm_info
