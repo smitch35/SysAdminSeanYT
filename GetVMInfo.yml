@@ -7,7 +7,7 @@
     - name: Display information on virtual machines
       community.general.proxmox_kvm:
         api_host: 192.168.20.2
-        api_user: root@pam
+        api_user: root
         api_password: 8cBuZ787
         node: 192.168.20.2
         state: current
