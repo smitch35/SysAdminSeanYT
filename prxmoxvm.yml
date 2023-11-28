@@ -7,7 +7,7 @@
 
   - name: Create new VM with minimal options
     community.general.proxmox_kvm:
-      api_user: "{{ proxmox_root }}"
+      api_user: root
       api_password: 8cBuZ787
       api_host: 192.168.20.2
       name: spynal
