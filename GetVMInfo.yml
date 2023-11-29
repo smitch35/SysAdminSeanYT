@@ -19,7 +19,6 @@
         api_host: 192.168.20.2
         api_user: root@pam
         api_password: 8cBuZ787
-        node: 192.168.20.2
       register: vm_info
 
     - name: Display gathered facts
