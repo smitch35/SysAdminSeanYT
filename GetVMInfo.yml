@@ -17,3 +17,10 @@
     - name: Display gathered facts
       debug:
         var: vm_info
+
+    - name: Display CPU, RAM, and storage usage
+      debug:
+        msg: |
+          CPU usage: {{ vm_info.cpu }}%
+          RAM usage: {{ vm_info.memory.used / 1024 / 1024 }} MB / {{ vm_info.memory.total / 1024 / 1024 }} MB
+          Disk usage: {{ vm_info.disk.used / 1024 / 1024 / 1024 }} GB / {{ vm_info.disk.total / 1024 / 1024 / 1024 }} GB
