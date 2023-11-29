@@ -16,7 +16,7 @@
 
     - name: List all existing virtual machines on node
       community.general.proxmox_vm_info:
-        api_host: 192.168.20.2
+        api_host: 192.168.20.3
         api_user: root@pam
         api_password: 8cBuZ787
       register: vm_info
