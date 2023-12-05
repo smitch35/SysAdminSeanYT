@@ -4,8 +4,8 @@
   gather_facts: no
   tasks:
     - name: Power on servers
-      roles:
-        - role: '/home/tigermask/.ansible/collections/ansible_collections/dellemc/openmanage/idrac_server_powerstate'
+      ansible.builtin.include_role:
+        name: idrac_server_powerstate
       vars:  
         hostname: "{{ idrac_ip }}"
         username: "{{ idrac_user }}"
