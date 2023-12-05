@@ -11,4 +11,4 @@
         username: "{{ idrac_user }}"
         password: "{{ idrac_password }}"
         validate_certs: false
-        reset_type: "On"
+        reset_type: "GracefulShutdown"
