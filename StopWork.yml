@@ -5,7 +5,8 @@
   
   tasks:
     - name: Power off servers
-      dellemc.openmanage.idrac_server_powerstate:
+      include_role:
+        name: /home/tigermask/.ansible/collections/ansible_collections/dellemc/openmanage/idrac_server_powerstate
         hostname: "{{ idrac_ip }}"
         username: "{{ idrac_user }}"
         password: "{{ idrac_password }}"
