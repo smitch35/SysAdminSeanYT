@@ -3,10 +3,10 @@
   hosts: dell-idrac
   gather_facts: no
   tasks:
-    - name: Power off servers
-      idrac_server_powerstate:
-        hostname: "{{ idrac_ip }}"
-        username: "{{ idrac_user }}"
-        password: "{{ idrac_password }}"
-        validate_certs: false
-        reset_type: "GracefulShutdown"
+  - name: Power off servers
+    idrac_server_powerstate:
+      hostname: "{{ idrac_ip }}"
+      username: "{{ idrac_user }}"
+      password: "{{ idrac_password }}"
+      validate_certs: false
+      reset_type: "GracefulShutdown"
