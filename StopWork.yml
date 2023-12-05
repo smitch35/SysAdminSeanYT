@@ -3,9 +3,8 @@
   hosts: dell-idrac
   gather_facts: no
   tasks:
-    - name: Power on servers
+    - name: Power off servers
       idrac_server_powerstate:
-      vars:  
         hostname: "{{ idrac_ip }}"
         username: "{{ idrac_user }}"
         password: "{{ idrac_password }}"
