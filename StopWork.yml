@@ -1,14 +1,14 @@
 ---
-- name: Power on Dell servers via iDRAC
+- name: Power off Dell servers via iDRAC
   hosts: dell-idrac
   gather_facts: no
-  
   tasks:
     - name: Power off servers
-      include_role:
-        name: /home/tigermask/.ansible/collections/ansible_collections/dellemc/openmanage/idrac_server_powerstate
+      ansible.builtin.include_role:
+        name: idrac_server_powerstate
+      vars:  
         hostname: "{{ idrac_ip }}"
         username: "{{ idrac_user }}"
         password: "{{ idrac_password }}"
         validate_certs: false
-        reset_type: "GracefulShutdown"
+        reset_type: "On"
