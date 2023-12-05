@@ -4,8 +4,7 @@
   gather_facts: no
   tasks:
     - name: Power on servers
-      include_role:
-        name: idrac_server_powerstate
+      idrac_server_powerstate:
       vars:  
         hostname: "{{ idrac_ip }}"
         username: "{{ idrac_user }}"
