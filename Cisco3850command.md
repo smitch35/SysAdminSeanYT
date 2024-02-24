@@ -60,11 +60,13 @@ No shutdown
 
 
 ### Configure SSH
-# ip domain-name your_domain_name
-# crypto key generate rsa general-keys modulus 2048
-# ip ssh version 2
-# username your_username secret your_password
-# username your_username privilege 15
-# line vty 0 15
-# transport input ssh
-# write memory
+```
+ ip domain-name your_domain_name
+ crypto key generate rsa general-keys modulus 2048
+ ip ssh version 2
+ username your_username secret your_password
+ username your_username privilege 15
+ line vty 0 15
+ transport input ssh
+ write memory
+```
