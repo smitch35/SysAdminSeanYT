@@ -1,0 +1,51 @@
+---
+- name: Deploy ESXi to hosts
+  hosts: esxi_hosts
+  gather_facts: no
+  vars:
+    esxi_iso_url: "http://path/to/esxi_iso.iso"
+    esxi_datastore: "datastore1"
+    esxi_root_password: "your_root_password"
+    esxi_network_config:
+      - name: "VM Network"
+        nic: "vmnic0"
+        ip: "192.168.20.5"
+        netmask: "255.255.255.0"
+        gateway: "192.168.20.1"
+        dns_servers:
+          - "192.168.1.1"
+          - "8.8.8.8"
+
+  tasks:
+    - name: Ensure ESXi ISO is downloaded
+      get_url:
+        url: "{{ esxi_iso_url }}"
+        dest: "/tmp/esxi.iso"
+      delegate_to: localhost
+
+    - name: Install ESXi
+      community.general.vmware_deploy_ovf:
+        hostname: "{{ inventory_hostname }}"
+        username: "root"
+        password: "{{ esxi_root_password }}"
+        esxi_hostname: "{{ inventory_hostname }}"
+        esxi_datastore: "{{ esxi_datastore }}"
+        ovf: "/tmp/esxi.iso"
+        wait_for_ip_address: yes
+      delegate_to: localhost
+
+    - name: Configure network on ESXi host
+      vmware_host_config_manager:
+        hostname: "{{ inventory_hostname }}"
+        username: "root"
+        password: "{{ esxi_root_password }}"
+        config:
+          network:
+            ip: "{{ item.ip }}"
+            subnet_mask: "{{ item.netmask }}"
+            gateway: "{{ item.gateway }}"
+            dns_servers: "{{ item.dns_servers }}"
+            nic: "{{ item.nic }}"
+            hostname: "{{ esxi_hostname }}"
+            domainname: "{{ esxi_domainname }}"
+      with_items: "{{ esxi_network_config }}"

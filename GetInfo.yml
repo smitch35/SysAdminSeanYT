@@ -1,6 +1,6 @@
 ---
 - name: Gather facts about proxmox hosts
-  hosts: proxmox
+  hosts: tigerhosts
   gather_facts: yes
 
   tasks: 
