@@ -2,7 +2,8 @@
 - name: Gather facts about proxmox hosts
   hosts: tigerhosts
   gather_facts: yes
-
+  become: yes
+  
   tasks: 
     - name: Display gathered facts
       debug:
