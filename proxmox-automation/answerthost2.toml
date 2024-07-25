@@ -4,7 +4,7 @@ country = "us"
 fqdn = "tigerhost01.dangdatacenter.local"
 mailto = "sean.mitchuson@gmail.com"
 timezone = "America/New_York"
-root_password = "8cBuZ787"
+root_password = "password123"
 
 
 [network]
