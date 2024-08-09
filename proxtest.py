@@ -12,9 +12,11 @@ node_name = 'TigerHost04'
 
 # Collect data for the HTML file
 email_content = ""
+cdrom_content = ""
+ha_content = ""
 
 def collect_info(container_type):
-    global email_content
+    global email_content, cdrom_content, ha_content
     containers = proxmox.nodes(node_name).__getattr__(container_type).get()
 
     for container in containers:
@@ -43,6 +45,26 @@ def collect_info(container_type):
         else:
             email_content += f"<tr><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>No active snapshots</td><td>{tags}</td></tr>"
 
+        # Check for CD-ROM mounted
+        if container_type == 'qemu':  # Only for VMs, not LXCs
+            try:
+                disks = container_config.get('ide', [])
+                cdroms = [disk for disk in disks if 'cdrom' in disk]
+                if cdroms:
+                    cdrom_content += f"<tr><td>VM ID: {container_id}</td><td>{container_name}</td><td>CD-ROM Mounted</td></tr>"
+                else:
+                    cdrom_content += f"<tr><td>VM ID: {container_id}</td><td>{container_name}</td><td>No CD-ROM Mounted</td></tr>"
+            except Exception as e:
+                cdrom_content += f"<tr><td>VM ID: {container_id}</td><td>{container_name}</td><td>Error checking CD-ROM: {e}</td></tr>"
+
+        # Check HA status
+        try:
+            ha_status = proxmox.nodes(node_name).ha.resources(container_id).get()
+            ha_status_text = "Enabled" if ha_status else "Disabled"
+            ha_content += f"<tr><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>{ha_status_text}</td></tr>"
+        except Exception as e:
+            ha_content += f"<tr><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>Error fetching HA status: {e}</td></tr>"
+
 # Collect information for both VMs and LXCs
 collect_info('qemu')
 collect_info('lxc')
@@ -52,6 +74,7 @@ html_content = f"""
 <html>
     <body>
         <h2>Proxmox VM and LXC Report</h2>
+        <h3>VMs and LXCs Snapshot and Tag Report</h3>
         <table border="1" cellpadding="5" cellspacing="0">
             <tr>
                 <th>ID</th>
@@ -60,6 +83,24 @@ html_content = f"""
                 <th>Tags</th>
             </tr>
             {email_content}
+        </table>
+        <h3>VM CD-ROM Status</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+            <tr>
+                <th>VM ID</th>
+                <th>Name</th>
+                <th>CD-ROM Status</th>
+            </tr>
+            {cdrom_content}
+        </table>
+        <h3>HA Status</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>HA Status</th>
+            </tr>
+            {ha_content}
         </table>
     </body>
 </html>
