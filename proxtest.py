@@ -1,8 +1,10 @@
 from proxmoxer import ProxmoxAPI
-import urllib3
+import requests
+import warnings
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
-# Disable SSL warnings (if you're not verifying SSL certificates)
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+# Suppress only the InsecureRequestWarning
+warnings.simplefilter('ignore', InsecureRequestWarning)
 
 # Replace with your Proxmox host details
 proxmox = ProxmoxAPI('192.168.20.4', user='root@pam', password='8cBuZ787', verify_ssl=False)
@@ -11,12 +13,13 @@ proxmox = ProxmoxAPI('192.168.20.4', user='root@pam', password='8cBuZ787', verif
 node_name = 'TigerHost04'
 
 # Collect data for the HTML file
-email_content = ""
+snapshot_content = ""
+tag_content = ""
 cdrom_content = ""
 ha_content = ""
 
 def collect_info(container_type):
-    global email_content, cdrom_content, ha_content
+    global snapshot_content, tag_content, cdrom_content, ha_content
     containers = proxmox.nodes(node_name).__getattr__(container_type).get()
 
     for container in containers:
@@ -28,7 +31,7 @@ def collect_info(container_type):
             snapshots = proxmox.nodes(node_name).__getattr__(container_type)(container_id).snapshot.get()
         except Exception as e:
             snapshots = []
-            email_content += f"<tr><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>Error fetching snapshots: {e}</td><td></td></tr>"
+            snapshot_content += f"<tr><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>Error fetching snapshots: {e}</td></tr>"
             continue
 
         # Fetch and display tags for the container
@@ -36,14 +39,17 @@ def collect_info(container_type):
         tags = container_config.get('tags') or "No tags assigned"
 
         # Check if there are any active snapshots
-        active_snapshots = [snapshot for snapshot in snapshots if snapshot.get('vmstate', 0) == 1]
+        active_snapshots = [snapshot for snapshot in snapshots if snapshot.get('vmstate', 0) == 0]
 
-        # Add to email content
+        # Add to snapshot content
         if active_snapshots:
             for snapshot in active_snapshots:
-                email_content += f"<tr><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>{snapshot['name']}, Created On: {snapshot['snaptime']}</td><td>{tags}</td></tr>"
+                snapshot_content += f"<tr><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>{snapshot['name']}, Created On: {snapshot['snaptime']}</td></tr>"
         else:
-            email_content += f"<tr><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>No active snapshots</td><td>{tags}</td></tr>"
+            snapshot_content += f"<tr><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>No active snapshots</td></tr>"
+
+        # Add to tag content
+        tag_content += f"<tr><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>{tags}</td></tr>"
 
         # Check for CD-ROM mounted
         if container_type == 'qemu':  # Only for VMs, not LXCs
@@ -69,23 +75,59 @@ def collect_info(container_type):
 collect_info('qemu')
 collect_info('lxc')
 
-# Create the HTML body with the collected information
+# Create the HTML body with separate sections for snapshots and tags
 html_content = f"""
 <html>
+    <head>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                text-align: center;
+            }}
+            h2, h3 {{
+                color: #333;
+            }}
+            table {{
+                margin: 0 auto;
+                border-collapse: collapse;
+                width: 80%;
+            }}
+            th, td {{
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }}
+            th {{
+                background-color: #f2f2f2;
+                color: #333;
+            }}
+            tr:nth-child(even) {{
+                background-color: #f9f9f9;
+            }}
+        </style>
+    </head>
     <body>
         <h2>Proxmox VM and LXC Report</h2>
-        <h3>VMs and LXCs Snapshot and Tag Report</h3>
-        <table border="1" cellpadding="5" cellspacing="0">
+        <h3>Snapshots Report</h3>
+        <table>
             <tr>
                 <th>ID</th>
                 <th>Name</th>
                 <th>Snapshot Info</th>
+            </tr>
+            {snapshot_content}
+        </table>
+        <h3>Tags Report</h3>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
                 <th>Tags</th>
             </tr>
-            {email_content}
+            {tag_content}
         </table>
         <h3>VM CD-ROM Status</h3>
-        <table border="1" cellpadding="5" cellspacing="0">
+        <table>
             <tr>
                 <th>VM ID</th>
                 <th>Name</th>
@@ -94,7 +136,7 @@ html_content = f"""
             {cdrom_content}
         </table>
         <h3>HA Status</h3>
-        <table border="1" cellpadding="5" cellspacing="0">
+        <table>
             <tr>
                 <th>ID</th>
                 <th>Name</th>
