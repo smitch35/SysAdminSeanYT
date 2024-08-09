@@ -8,7 +8,7 @@ from datetime import datetime
 warnings.simplefilter('ignore', InsecureRequestWarning)
 
 # Replace with your Proxmox cluster details
-proxmox = ProxmoxAPI('192.168.20.4', user='root@pam', password='8cBuZ787', verify_ssl=False)
+proxmox = ProxmoxAPI('192.168.20.4', user='root@pam', password='password', verify_ssl=False)
 
 # Collect data for the HTML file
 snapshot_content = ""
