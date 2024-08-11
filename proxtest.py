@@ -1,20 +1,15 @@
 from proxmoxer import ProxmoxAPI
-import requests
 import warnings
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from datetime import datetime
 
 # Suppress only the InsecureRequestWarning
-warnings.simplefilter('ignore', InsecureRequestWarning)
+warnings.simplefilter('ignore', category=UserWarning)
 
 # Replace with your Proxmox cluster details
-proxmox = ProxmoxAPI('192.168.20.4', user='root@pam', password='password', verify_ssl=False)
+proxmox = ProxmoxAPI('192.168.20.4', user='root@pam', password='8cBuZ787', verify_ssl=False)
 
 # Collect data for the HTML file
-snapshot_content = ""
-tag_content = ""
-iso_content = ""
-ha_content = ""
+node_data = {}
 
 def format_datetime(timestamp):
     """ Convert Proxmox timestamp to a readable format """
@@ -25,8 +20,15 @@ def format_datetime(timestamp):
         return "Unknown"
 
 def collect_info(node_name, container_type):
-    global snapshot_content, tag_content, iso_content, ha_content
     containers = proxmox.nodes(node_name).__getattr__(container_type).get()
+
+    if node_name not in node_data:
+        node_data[node_name] = {
+            'snapshots': '',
+            'tags': '',
+            'isos': '',
+            'ha_status': ''
+        }
 
     for container in containers:
         container_id = container['vmid']
@@ -35,10 +37,9 @@ def collect_info(node_name, container_type):
         # Fetch the snapshots for the current container
         try:
             snapshots = proxmox.nodes(node_name).__getattr__(container_type)(container_id).snapshot.get()
-            print(f"Snapshots for {container_type} ID {container_id}: {snapshots}")  # Debug statement
         except Exception as e:
             snapshots = []
-            snapshot_content += f"<tr><td>{node_name}</td><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>Error fetching snapshots: {e}</td></tr>"
+            node_data[node_name]['snapshots'] += f"<tr><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>Error fetching snapshots: {e}</td></tr>"
             continue
 
         # Fetch and display tags for the container
@@ -47,36 +48,24 @@ def collect_info(node_name, container_type):
             tags = container_config.get('tags') or "No tags assigned"
         except Exception as e:
             tags = "Error fetching tags"
-        
+
         # Check if there are any active snapshots
         active_snapshots = [snapshot for snapshot in snapshots if 'vmstate' in snapshot and snapshot.get('vmstate', 0) == 0]
-        print(f"Active snapshots for {container_type} ID {container_id}: {active_snapshots}")  # Debug statement
 
-        # Add to snapshot content
+        # Add to snapshot content only if there are active snapshots
         if active_snapshots:
             for snapshot in active_snapshots:
                 snapshot_date = format_datetime(snapshot['snaptime'])
-                snapshot_content += f"<tr><td>{node_name}</td><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>{snapshot['name']}</td><td>{snapshot_date}</td></tr>"
-        else:
-            snapshot_content += f"<tr><td>{node_name}</td><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>No active snapshots</td><td></td></tr>"
+                node_data[node_name]['snapshots'] += f"<tr><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>{snapshot['name']}</td><td>{snapshot_date}</td></tr>"
 
         # Add to tag content
-        tag_content += f"<tr><td>{node_name}</td><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>{tags}</td></tr>"
+        node_data[node_name]['tags'] += f"<tr><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>{tags}</td></tr>"
 
         # Check for ISO mounted
         if container_type == 'qemu':  # Only for VMs, not LXCs
             try:
                 container_config = proxmox.nodes(node_name).__getattr__(container_type)(container_id).config.get()
-                print(f"Container config for VM ID {container_id}: {container_config}")  # Debug statement
-                
-                # Check for both IDE and SATA with specific names like ide2
-                ide_disks = [disk for disk in container_config if disk.startswith('ide')]
-                sata_disks = [disk for disk in container_config if disk.startswith('sata')]
-                print(f"IDE Disks for VM ID {container_id}: {ide_disks}")  # Debug statement
-                print(f"SATA Disks for VM ID {container_id}: {sata_disks}")  # Debug statement
-                
-                # Combine all disk entries
-                disks = ide_disks + sata_disks
+                disks = [key for key in container_config if key.startswith(('ide', 'sata'))]
                 
                 # Check for ISO mounts and extract ISO names
                 isos = []
@@ -87,19 +76,17 @@ def collect_info(node_name, container_type):
                 
                 if isos:
                     for iso_name in isos:
-                        iso_content += f"<tr><td>{node_name}</td><td>VM ID: {container_id}</td><td>{container_name}</td><td>ISO Mounted: {iso_name}</td></tr>"
-                else:
-                    iso_content += f"<tr><td>{node_name}</td><td>VM ID: {container_id}</td><td>{container_name}</td><td>No ISO Mounted</td></tr>"
+                        node_data[node_name]['isos'] += f"<tr><td>VM ID: {container_id}</td><td>{container_name}</td><td>ISO Mounted: {iso_name}</td></tr>"
             except Exception as e:
-                iso_content += f"<tr><td>{node_name}</td><td>VM ID: {container_id}</td><td>{container_name}</td><td>Error checking ISO: {e}</td></tr>"
+                node_data[node_name]['isos'] += f"<tr><td>VM ID: {container_id}</td><td>{container_name}</td><td>Error checking ISO: {e}</td></tr>"
 
         # Check HA status
         try:
             ha_status = proxmox.nodes(node_name).ha.resources(container_id).get()
             ha_status_text = "Enabled" if ha_status else "Disabled"
-            ha_content += f"<tr><td>{node_name}</td><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>{ha_status_text}</td></tr>"
+            node_data[node_name]['ha_status'] += f"<tr><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>{ha_status_text}</td></tr>"
         except Exception as e:
-            ha_content += f"<tr><td>{node_name}</td><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>Error fetching HA status: {e}</td></tr>"
+            node_data[node_name]['ha_status'] += f"<tr><td>{container_type.upper()} ID: {container_id}</td><td>{container_name}</td><td>Error fetching HA status: {e}</td></tr>"
 
 # Get list of nodes in the cluster
 try:
@@ -114,7 +101,7 @@ for node in nodes:
     collect_info(node_name, 'qemu')
     collect_info(node_name, 'lxc')
 
-# Create the HTML body with separate sections for snapshots, tags, ISO status, and HA status
+# Create the HTML body with collapsible sections
 html_content = f"""
 <html>
     <head>
@@ -152,60 +139,113 @@ html_content = f"""
             }}
             .section {{
                 margin: 20px 0;
+                text-align: left;
+            }}
+            .collapsible {{
+                background-color: #007bff;
+                color: white;
+                cursor: pointer;
+                padding: 10px;
+                width: 100%;
+                border: none;
+                text-align: left;
+                outline: none;
+                font-size: 16px;
+            }}
+            .active, .collapsible:hover {{
+                background-color: #0056b3;
+            }}
+            .content {{
+                padding: 0 18px;
+                display: none;
+                overflow: hidden;
+                background-color: #f9f9f9;
             }}
         </style>
     </head>
     <body>
         <h2>Proxmox Cluster Report</h2>
+"""
+
+for node_name, data in node_data.items():
+    node_section = f"""
         <div class="section">
+            <button class="collapsible">{node_name}</button>
+            <div class="content">
+    """
+
+    if data['snapshots']:
+        node_section += f"""
             <h3>Snapshots Report</h3>
             <table>
                 <tr>
-                    <th>Node</th>
                     <th>ID</th>
                     <th>Name</th>
                     <th>Snapshot Name</th>
                     <th>Snapshot Date</th>
                 </tr>
-                {snapshot_content}
+                {data['snapshots']}
             </table>
-        </div>
-        <div class="section">
+        """
+
+    node_section += f"""
             <h3>Tags Report</h3>
             <table>
                 <tr>
-                    <th>Node</th>
                     <th>ID</th>
                     <th>Name</th>
                     <th>Tags</th>
                 </tr>
-                {tag_content}
+                {data['tags']}
             </table>
-        </div>
-        <div class="section">
+    """
+
+    if data['isos']:
+        node_section += f"""
             <h3>VM ISO Status</h3>
             <table>
                 <tr>
-                    <th>Node</th>
                     <th>VM ID</th>
                     <th>Name</th>
                     <th>ISO Status</th>
                 </tr>
-                {iso_content}
+                {data['isos']}
             </table>
-        </div>
-        <div class="section">
+        """
+
+    node_section += f"""
             <h3>HA Status</h3>
             <table>
                 <tr>
-                    <th>Node</th>
                     <th>ID</th>
                     <th>Name</th>
                     <th>HA Status</th>
                 </tr>
-                {ha_content}
+                {data['ha_status']}
             </table>
+            </div>
         </div>
+    """
+
+    html_content += node_section
+
+html_content += """
+        <script>
+            var coll = document.getElementsByClassName("collapsible");
+            var i;
+
+            for (i = 0; i < coll.length; i++) {
+                coll[i].addEventListener("click", function() {
+                    this.classList.toggle("active");
+                    var content = this.nextElementSibling;
+                    if (content.style.display === "block") {
+                        content.style.display = "none";
+                    } else {
+                        content.style.display = "block";
+                    }
+                });
+            }
+        </script>
     </body>
 </html>
 """
