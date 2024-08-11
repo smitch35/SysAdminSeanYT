@@ -21,3 +21,6 @@ Support comes in many different fashsions.  Watch the vidoes, comment on the vid
   
 ### Other Videos
 I will also be covering topics such as 'tools we use' and 'things I hate'
+
+### Support
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/O4O2HMB4Q)
