@@ -1,0 +1,19 @@
+[global]
+keyboard = "en-us"
+country = "us"
+fqdn = "tigerhost03.dangdatacenter.local"
+mailto = "sean.mitchuson@gmail.com"
+timezone = "America/New_York"
+root_password = "password123"
+
+
+[network]
+source = "from-answer"
+cidr = "192.168.20.3/24"
+dns = "192.168.1.1"
+gateway = "192.168.20.1"
+filter.ID_NET_NAME = "eno4"
+
+[disk-setup]
+filesystem = "xfs"
+disk_list = ["sda"]

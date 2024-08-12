@@ -5,6 +5,7 @@ from datetime import datetime
 # Suppress only the InsecureRequestWarning
 warnings.simplefilter('ignore', category=UserWarning)
 
+<<<<<<< HEAD
 def get_proxmox_api():
 	""" Prompt user for Proxmox API Details and return a connection ProxmoxAPI object """
 	# Replace input() with a more secure method to handle passwords in production
@@ -16,6 +17,10 @@ def get_proxmox_api():
 
 proxmox = get_proxmox_api()
 
+=======
+# Replace with your Proxmox cluster details
+proxmox = ProxmoxAPI('192.168.20.4', user='root@pam', password='8cBuZ787', verify_ssl=False)
+>>>>>>> 1fed90ba7acbd1a6c855a59adbd92839316db4fe
 
 # Collect data for the HTML file
 node_data = {}
